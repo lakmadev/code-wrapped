@@ -1,0 +1,15 @@
+{
+  "name": "code-wrapped",
+  "description": "Your Claude Code Wrapped: activity heatmap, top files, coding personality and unlockable achievements.",
+  "owner": {
+    "name": "lakmadev",
+    "url": "https://github.com/lakmadev"
+  },
+  "plugins": [
+    {
+      "name": "code-wrapped",
+      "source": "./",
+      "description": "Your Claude Code Wrapped: activity heatmap, top files, coding personality and unlockable achievements."
+    }
+  ]
+}
