@@ -54,5 +54,6 @@ test('a turn unlocks an achievement and the pane draws on both surfaces', async 
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ plugin: 'code-wrapped', surface, component: 'Pane', requestId: 'wrapped', props: { bodyColumns: 60 } as never })
     expect(await ui.find({ key: 'copy' })).toBeDefined()
+    expect(JSON.stringify(await ui.drawn())).toContain(surface === 'terminal' ? '"type":"Raster"' : '"type":"Svg"')
   }
 })

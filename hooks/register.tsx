@@ -121,11 +121,10 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const elements = $.ui.resolve(e)
-    const { Box, Text, Button } = elements
+    const { Box, Text, Button } = $.ui.resolve(e)
     const now = await $.clock.now()
     const fit = Math.floor(((e.props.bodyColumns ?? 60) - 2) / 2)
-    const weeks = weeksAsked ?? Math.max(4, Math.min(26, 'Raster' in elements ? fit : 26))
+    const weeks = weeksAsked ?? Math.max(4, Math.min(26, e.surface === 'terminal' ? fit : 26))
     const days = await loadDays($, now - weeks * 7 * DAY_MS)
     const s = summarize(days)
     const active = new Set((await $.store.keys()).filter(k => k.startsWith('day:')).map(k => k.slice(4)))
@@ -137,10 +136,15 @@ export const register: Register = on => {
 
     const maxFile = s.topFiles[0]?.[1] ?? 1
     const maxTool = s.topTools[0]?.[1] ?? 1
-    const heat =
-      'Raster' in elements ? <elements.Raster key="heat" columns={weeks * 2} rows={7} cells={heatCells(grid)} />
-      : 'Svg' in elements ? <elements.Svg source={heatSvg(grid)} alt={`Activity heatmap, ${s.turns} turns over ${weeks} weeks`} isInteractive />
-      : <Text dimColor>{s.turns} turns over {weeks} weeks</Text>
+    // Choose by surface: every table lists Raster, but only the terminal draws it.
+    let heat
+    if (e.surface === 'terminal') {
+      const { Raster } = $.ui.resolve(e)
+      heat = <Raster key="heat" columns={weeks * 2} rows={7} cells={heatCells(grid)} />
+    } else {
+      const { Svg } = $.ui.resolve(e)
+      heat = <Svg source={heatSvg(grid)} alt={`Activity heatmap, ${s.turns} turns over ${weeks} weeks`} isInteractive />
+    }
 
     return (
       <Box flexDirection="column" gap={1}>
